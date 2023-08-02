@@ -1,0 +1,69 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@rules_cc//cc:defs.bzl",
+     "cc_library",
+     # "cc_shared_library"
+     )
+
+load("@libs7//lib:BUILD.bzl", "clibgen_runner")
+
+load("//:BUILD.bzl",
+     "BASE_SRCS", "BASE_DEPS", "BASE_INCLUDE_PATHS",
+     "BASE_COPTS", "BASE_DEFINES", "BASE_LINKOPTS",
+     "TIMEOUT",
+     "GOPT_VERSION",
+     "UNITY_VERSION",
+     "UTHASH_VERSION",
+     "LIBM_S7_VERSION",
+     "LIBS7_VERSION")
+
+# load("//:BUILD.bzl",
+#      "BASE_SRCS", "BASE_DEPS", "BASE_INCLUDE_PATHS",
+#      "BASE_COPTS", "BASE_DEFINES", "BASE_LINKOPTS",
+#      "LIBS7_VERSION")
+
+SRCS          = []
+DEPS          = BASE_DEPS
+INCLUDE_PATHS = BASE_INCLUDE_PATHS
+COPTS         = BASE_COPTS + INCLUDE_PATHS + ["-Wno-unused-parameter"]
+DEFINES       = BASE_DEFINES
+LINKOPTS      = BASE_LINKOPTS
+
+################################################################
+cc_library(
+    name  = "m_s7",
+    linkstatic = True,
+    alwayslink = True, # ensure init fn sym available for dlsym
+    srcs  = SRCS + [":libm_s7.c"],
+    deps  = DEPS,
+    copts = COPTS,
+    linkopts = LINKOPTS  + select({
+        "@platforms//os:linux": ["-lrt"],
+        "//conditions:default": []
+    }),
+    local_defines = DEFINES,
+    # + select({
+    #     "//config/host/build:linux?": ["_POSIX_C_SOURCE=200809",
+    #                              "_DEFAULT_SOURCE" # strcasecmp in string.h
+    #                              ],
+    #     "//conditions:default": []
+    # })
+)
+
+cc_shared_library(
+    name  = "m_s7_dso",  # create libm_s7.{dylib,so}
+    shared_lib_name = select({
+        "@platforms//os:macos": "libm_s7.dylib",
+        "@platforms//os:linux": "libm_s7.so",
+        # "@platforms//os:windows": "libm_s7.dll",
+        "//conditions:default": "libm_s7.so"
+    }),
+    deps = [":m_s7"]
+)
+
+clibgen_runner(
+    name = "libm_s7_runbin",
+    args = ["--script", "$(location libm_clibgen.scm)"],
+    srcs = [":libm_clibgen.scm"],
+    outs = [":libm_s7.c"]
+)
