@@ -1,0 +1,12 @@
+load("@libs7//plugin:RULES.bzl", "clibgen")
+
+clibgen(
+    name = "clibgen",
+    args = [
+        # "-v",
+        "--script", "$(location libm_clibgen.scm)"
+    ],
+    srcs = [":libm_clibgen.scm"],
+    outs = [":libm_s7.c"],
+    visibility = ["//src:__pkg__"]
+)

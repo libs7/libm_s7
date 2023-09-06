@@ -1,0 +1,181 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
+load("@libs7//plugin:MACROS.bzl", "s7_plugin_test")
+
+SRCS          = []
+DEPS          = ["//src:m_s7"]
+INCLUDE_PATHS = ["-I$(@)/test"]
+COPTS         = INCLUDE_PATHS
+DEFINES       = []
+LINKOPTS      = []
+TIMEOUT = "short"
+
+TOOLCHAINS = ["//:test_repo_paths"]
+
+################################################################
+# exports_files(["common.c", "common.h"])
+
+test_suite(
+    name  = "test",
+    tests = [
+        ":libm_s7_test"
+    ]
+)
+
+# cc_binary(
+s7_plugin_test(
+    name = "libm_s7_test",
+    # linkstatic = True,
+    srcs = SRCS + ["libm_test.c"],
+    # + select({
+    #     # "//config/clibs/link:loadtime?": [
+    #     # "//config/clibs/link:shared?": [
+    #     #     "//lib/liblibc:libm_s7.c"  # , "//lib/liblibc:liblibm_s7.h",
+    #     # ],
+    #     "//conditions:default": []
+    # }),
+    local_defines = DEFINES,
+    deps = DEPS,
+    # + select({
+    #     "//config/clibs/link:archive?": [
+    #         "@libc//:liblibc"
+    #         # "//lib/liblibc:libm_s7"
+    #     ],
+    #     "//conditions:default": []
+    # }),
+    # data = select({
+    #     "//config/clibs/link:runtime?": [
+    #         "//lib/liblibc:libm_s7"
+    #     ],
+    #     "//conditions:default": []
+    # }),
+    copts = COPTS,
+    # + [
+    #     "-I$(GENDIR)/lib/liblibc",
+    #     "-I$(GENDIR)/external/libs7/lib/liblibc",
+    # ],
+    linkopts = LINKOPTS,
+    timeout = TIMEOUT,
+    toolchains = TOOLCHAINS
+)
+
+# cc_test(
+#     name = "libm_link_archive",
+#     linkstatic = True,
+#     srcs = SRCS + ["libm_test.c"],
+#     local_defines = DEFINES,
+#     deps = DEPS + ["//lib/liblibc:libm_s7"],
+#     copts = COPTS + [
+#         "-I$(GENDIR)/lib/liblibc",
+#         "-I$(GENDIR)/external/libs7/lib/liblibc",
+#     ],
+#     linkopts = LINKOPTS,
+#     timeout = TIMEOUT
+# )
+
+# cc_test(
+#     name = "libm_link_shared",
+#     linkstatic = True,
+#     srcs = SRCS + [
+#         "libm_test.c",
+#         # "//lib/liblibc:libm_s7.c" ## , "//lib/liblibc:liblibm_s7.h",
+#     ],
+#     local_defines = DEFINES,
+#     deps = DEPS + ["//lib/liblibc:libm_s7"],
+#     copts = COPTS + [
+#         "-I$(GENDIR)/lib/liblibc",
+#         "-I$(GENDIR)/external/libs7/lib/liblibc",
+#     ],
+#     linkopts = LINKOPTS,
+#     timeout = TIMEOUT
+# )
+
+# cc_test(
+#     name = "libm_link_runtime",
+#     linkstatic = True,
+#     srcs = SRCS + ["libm_test.c"],
+#     local_defines = DEFINES + ["CLIBS_LINK_RUNTIME"],
+#     deps = DEPS,
+#     data = ["//lib/liblibc:libm_s7"],
+#     copts = COPTS + [
+#         "-I$(GENDIR)/lib/liblibc",
+#         "-I$(GENDIR)/external/libs7/lib/liblibc",
+#     ],
+#     linkopts = LINKOPTS,
+#     timeout = TIMEOUT
+# )
+
+# cc_test(
+#     name = "libm",
+#     linkstatic = True,
+#     srcs = SRCS + ["libm_test.c"] + select({
+#         "//config/clibs/link:shared?": [
+#             "//lib/libm:m_s7.c" # , "//lib/libm:libm_s7.h",
+#         ],
+#         "//conditions:default": []
+#     }),
+#     local_defines = DEFINES,
+#     deps = DEPS + select({
+#         "//config/clibs/link:archive?": ["//lib/libm:m_s7_archive"],
+#         "//conditions:default": []
+#     }),
+#     data = select({
+#         "//config/clibs/link:runtime?": [
+#             "//lib/libm:m_s7"
+#         ],
+#         "//conditions:default": []
+#     }),
+#     copts = COPTS + [
+#         "-I$(GENDIR)/lib/libm",
+#         "-I$(GENDIR)/external/libs7/lib/libm",
+#     ],
+#     linkopts = LINKOPTS,
+#     timeout = TIMEOUT
+# )
+
+# cc_test(
+#     name = "libm_link_archive",
+#     linkstatic = True,
+#     srcs = SRCS + ["libm_test.c"],
+#     local_defines = DEFINES,
+#     deps = DEPS + ["//lib/libm:m_s7_archive"],
+#     copts = COPTS + [
+#         "-I$(GENDIR)/lib/libm",
+#         "-I$(GENDIR)/external/libs7/lib/libm",
+#     ],
+#     linkopts = LINKOPTS,
+#     timeout = TIMEOUT
+# )
+
+# cc_test(
+#     name = "libm_link_shared",
+#     linkstatic = True,
+#     srcs = SRCS + [
+#         "libm_test.c",
+#         "//lib/libm:m_s7.c" # , "//lib/libm:libm_s7.h",
+#     ],
+#     local_defines = DEFINES,
+#     deps = DEPS,
+#     copts = COPTS + [
+#         "-I$(GENDIR)/lib/libm",
+#         "-I$(GENDIR)/external/libs7/lib/libm",
+#     ],
+#     linkopts = LINKOPTS,
+#     timeout = TIMEOUT
+# )
+
+# cc_test(
+#     name = "libm_link_runtime",
+#     linkstatic = True,
+#     srcs = SRCS + ["libm_test.c"],
+#     local_defines = DEFINES + ["CLIBS_LINK_RUNTIME"],
+#     deps = DEPS,
+#     data = ["//lib/libm:m_s7"],
+#     copts = COPTS + [
+#         "-I$(GENDIR)/lib/libm",
+#         "-I$(GENDIR)/external/libs7/lib/libm",
+#     ],
+#     linkopts = LINKOPTS,
+#     timeout = TIMEOUT
+# )
+

@@ -5,17 +5,18 @@ load("@rules_cc//cc:defs.bzl",
      # "cc_shared_library"
      )
 
-load("@libs7//lib:BUILD.bzl", "clibgen_runner")
+load("@libs7//plugin:MACROS.bzl", "s7_plugin", "s7_library")
+# load("@libs7//lib:BUILD.bzl", "clibgen_runner")
 
-load("//:BUILD.bzl",
-     "BASE_SRCS", "BASE_DEPS", "BASE_INCLUDE_PATHS",
-     "BASE_COPTS", "BASE_DEFINES", "BASE_LINKOPTS",
-     "TIMEOUT",
-     "GOPT_VERSION",
-     "UNITY_VERSION",
-     "UTHASH_VERSION",
-     "LIBM_S7_VERSION",
-     "LIBS7_VERSION")
+# load("//:BUILD.bzl",
+#      "BASE_SRCS", "BASE_DEPS", "BASE_INCLUDE_PATHS",
+#      "BASE_COPTS", "BASE_DEFINES", "BASE_LINKOPTS",
+#      "TIMEOUT",
+#      "GOPT_VERSION",
+#      "UNITY_VERSION",
+#      "UTHASH_VERSION",
+#      "LIBM_S7_VERSION",
+#      "LIBS7_VERSION")
 
 # load("//:BUILD.bzl",
 #      "BASE_SRCS", "BASE_DEPS", "BASE_INCLUDE_PATHS",
@@ -23,18 +24,24 @@ load("//:BUILD.bzl",
 #      "LIBS7_VERSION")
 
 SRCS          = []
-DEPS          = BASE_DEPS
-INCLUDE_PATHS = BASE_INCLUDE_PATHS
-COPTS         = BASE_COPTS + INCLUDE_PATHS + ["-Wno-unused-parameter"]
-DEFINES       = BASE_DEFINES
-LINKOPTS      = BASE_LINKOPTS
+DEPS          = [] # BASE_DEPS
+INCLUDE_PATHS = [] # BASE_INCLUDE_PATHS
+#COPTS         = BASE_COPTS + INCLUDE_PATHS +
+COPTS = [
+    "-Wno-unused-parameter",
+    "-I$(@)/src"
+]
+DEFINES       = [] #BASE_DEFINES
+LINKOPTS      = [] #BASE_LINKOPTS
+
+TOOLCHAINS = ["//:repo_paths"]
 
 ################################################################
-cc_library(
+s7_plugin(
     name  = "m_s7",
-    linkstatic = True,
-    alwayslink = True, # ensure init fn sym available for dlsym
-    srcs  = SRCS + [":libm_s7.c"],
+    # linkstatic = True,
+    # alwayslink = True, # ensure init fn sym available for dlsym
+    srcs  = ["//src/clibgen:libm_s7.c"],
     deps  = DEPS,
     copts = COPTS,
     linkopts = LINKOPTS  + select({
@@ -48,6 +55,7 @@ cc_library(
     #                              ],
     #     "//conditions:default": []
     # })
+    toolchains = TOOLCHAINS
 )
 
 cc_shared_library(
@@ -61,9 +69,9 @@ cc_shared_library(
     deps = [":m_s7"]
 )
 
-clibgen_runner(
-    name = "libm_s7_runbin",
-    args = ["--script", "$(location libm_clibgen.scm)"],
-    srcs = [":libm_clibgen.scm"],
-    outs = [":libm_s7.c"]
-)
+# clibgen_runner(
+#     name = "libm_s7_runbin",
+#     args = ["--script", "$(location libm_clibgen.scm)"],
+#     srcs = [":libm_clibgen.scm"],
+#     outs = [":libm_s7.c"]
+# )
