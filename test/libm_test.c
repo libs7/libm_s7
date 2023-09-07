@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 {
     s7 = s7_plugin_initialize("libm", argc, argv);
 
-    libs7_load_clib(s7, "m");
+    libs7_load_plugin(s7, "m");
 
     char *script_dir = "./test";
     s7_pointer newpath;
