@@ -3,14 +3,14 @@ load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@libs7//plugin:MACROS.bzl", "s7_plugin_test")
 
 SRCS          = []
-DEPS          = ["//src:m_s7"]
-INCLUDE_PATHS = ["-I$(@)/test"]
-COPTS         = INCLUDE_PATHS
+DEPS          = ["//lib:m_s7"]
+# INCLUDE_PATHS = ["-I$(@)/test"]
+COPTS         = [] # INCLUDE_PATHS
 DEFINES       = []
 LINKOPTS      = []
 TIMEOUT = "short"
 
-TOOLCHAINS = ["//:test_repo_paths"]
+# TOOLCHAINS = ["//:test_repo_paths"]
 
 ################################################################
 # exports_files(["common.c", "common.h"])
@@ -56,7 +56,7 @@ s7_plugin_test(
     # ],
     linkopts = LINKOPTS,
     timeout = TIMEOUT,
-    toolchains = TOOLCHAINS
+    # toolchains = TOOLCHAINS
 )
 
 # cc_test(

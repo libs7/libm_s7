@@ -6,42 +6,25 @@ load("@rules_cc//cc:defs.bzl",
      )
 
 load("@libs7//plugin:MACROS.bzl", "s7_plugin", "s7_library")
-# load("@libs7//lib:BUILD.bzl", "clibgen_runner")
-
-# load("//:BUILD.bzl",
-#      "BASE_SRCS", "BASE_DEPS", "BASE_INCLUDE_PATHS",
-#      "BASE_COPTS", "BASE_DEFINES", "BASE_LINKOPTS",
-#      "TIMEOUT",
-#      "GOPT_VERSION",
-#      "UNITY_VERSION",
-#      "UTHASH_VERSION",
-#      "LIBM_S7_VERSION",
-#      "LIBS7_VERSION")
-
-# load("//:BUILD.bzl",
-#      "BASE_SRCS", "BASE_DEPS", "BASE_INCLUDE_PATHS",
-#      "BASE_COPTS", "BASE_DEFINES", "BASE_LINKOPTS",
-#      "LIBS7_VERSION")
 
 SRCS          = []
-DEPS          = [] # BASE_DEPS
-INCLUDE_PATHS = [] # BASE_INCLUDE_PATHS
-#COPTS         = BASE_COPTS + INCLUDE_PATHS +
+DEPS          = []
+INCLUDE_PATHS = []
 COPTS = [
     "-Wno-unused-parameter",
-    "-I$(@)/src"
+    # "-I$(@)/src"
 ]
-DEFINES       = [] #BASE_DEFINES
-LINKOPTS      = [] #BASE_LINKOPTS
+DEFINES       = []
+LINKOPTS      = []
 
-TOOLCHAINS = ["//:repo_paths"]
+# TOOLCHAINS = ["//:repo_paths"]
 
 ################################################################
 s7_plugin(
     name  = "m_s7",
     # linkstatic = True,
     # alwayslink = True, # ensure init fn sym available for dlsym
-    srcs  = ["//src/clibgen:libm_s7.c"],
+    srcs  = ["//lib/clibgen:libm_s7.c"],
     deps  = DEPS,
     copts = COPTS,
     linkopts = LINKOPTS  + select({
@@ -49,13 +32,7 @@ s7_plugin(
         "//conditions:default": []
     }),
     local_defines = DEFINES,
-    # + select({
-    #     "//config/host/build:linux?": ["_POSIX_C_SOURCE=200809",
-    #                              "_DEFAULT_SOURCE" # strcasecmp in string.h
-    #                              ],
-    #     "//conditions:default": []
-    # })
-    toolchains = TOOLCHAINS
+    # toolchains = TOOLCHAINS
 )
 
 cc_shared_library(

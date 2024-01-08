@@ -6,7 +6,9 @@
 #include <sys/types.h>
 
 #include "gopt.h"
-#include "log.h"
+/* #include "log.h" */
+
+#define UNITY_INCLUDE_FLOAT
 #include "unity.h"
 #include "utarray.h"
 #include "utstring.h"
@@ -17,6 +19,17 @@
 s7_scheme *s7;
 
 extern struct option options[];
+
+int  s7plugin_verbosity;
+extern int  libs7_verbosity;
+#if defined(PROFILE_fastbuild)
+#define     TRACE_FLAG cwalk_s7_trace
+extern bool TRACE_FLAG;
+#define     DEBUG_LEVEL cwalk_s7_debug
+extern int  DEBUG_LEVEL;
+
+extern bool libs7_debug_runfiles;
+#endif
 
 char *sexp_input;
 char *sexp_expected;
