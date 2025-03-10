@@ -1,40 +1,30 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@rules_cc//cc:defs.bzl",
-     "cc_library",
-     # "cc_shared_library"
-     )
-
+load("@rules_cc//cc:defs.bzl", "cc_shared_library")
 load("@libs7//plugin:MACROS.bzl", "s7_plugin", "s7_library")
+load("@obazl_config_cc//config:BASE.bzl",
+     "BASE_COPTS", "DSO_EXT", "DYNLINK_OPTS",
+     _define_module_version = "define_module_version")
 
-SRCS          = []
-DEPS          = []
 INCLUDE_PATHS = []
-COPTS = [
+COPTS = BASE_COPTS + [
     "-Wno-unused-parameter",
     # "-I$(@)/src"
 ]
-DEFINES       = []
-LINKOPTS      = []
-
-# TOOLCHAINS = ["//:repo_paths"]
 
 ################################################################
 s7_plugin(
     name  = "m_s7",
-    # linkstatic = True,
     # alwayslink = True, # ensure init fn sym available for dlsym
     srcs  = ["//lib/clibgen:libm_s7.c"],
-    deps  = DEPS,
     copts = COPTS,
-    linkopts = LINKOPTS  + select({
-        "@platforms//os:linux": ["-lrt"],
-        "//conditions:default": []
-    }),
-    local_defines = DEFINES,
-    # toolchains = TOOLCHAINS
+    # linkopts = select({
+    #     "@platforms//os:linux": ["-lrt"],
+    #     "//conditions:default": []
+    # }),
 )
 
+## FIXME: use s7_shared_library macro
 cc_shared_library(
     name  = "m_s7_dso",  # create libm_s7.{dylib,so}
     shared_lib_name = select({
@@ -45,10 +35,3 @@ cc_shared_library(
     }),
     deps = [":m_s7"]
 )
-
-# clibgen_runner(
-#     name = "libm_s7_runbin",
-#     args = ["--script", "$(location libm_clibgen.scm)"],
-#     srcs = [":libm_clibgen.scm"],
-#     outs = [":libm_s7.c"]
-# )
