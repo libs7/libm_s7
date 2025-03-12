@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@rules_cc//cc:defs.bzl", "cc_shared_library")
 load("@libs7//plugin:MACROS.bzl", "s7_plugin", "s7_library")
-load("@obazl_config_cc//config:BASE.bzl",
+load("@obazl_tools_cc//config:BASE.bzl",
      "BASE_COPTS", "DSO_EXT", "DYNLINK_OPTS",
      _define_module_version = "define_module_version")
 
